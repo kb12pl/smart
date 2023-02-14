@@ -15,7 +15,7 @@ const FlexDirectionBasics = () => {
       <View style={[styles.box, {backgroundColor: 'skyblue'}]} />
       <View style={[styles.box, {backgroundColor: 'steelblue'}]} />
     </PreviewLayout>
-  );
+  ); 
 };
 
 type PreviewLayoutProps = PropsWithChildren<{
