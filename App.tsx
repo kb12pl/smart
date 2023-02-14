@@ -18,7 +18,8 @@ const ButtonGoTo=({label,navigation})=>{
 
 const Home=({ navigation })=>{    
   return (      
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>    
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' ,
+    flexDirection:"column",padding:10 }}>    
       <ButtonGoTo label="Picture" navigation={navigation}/>      
       <ButtonGoTo label="Flex" navigation={navigation}/>      
       <ButtonGoTo label="Layout" navigation={navigation}/>      

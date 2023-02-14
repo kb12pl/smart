@@ -1,171 +1,104 @@
 import React, {useState} from 'react';
-import {
-  Button,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {View, Text, StyleSheet, TextInput} from 'react-native';
+import type {PropsWithChildren} from 'react';
 
-const App = () => {
-  const flexDirections = [
-    'row',
-    'row-reverse',
-    'column',
-    'column-reverse',
-  ] as const;
-  const justifyContents = [
-    'flex-start',
-    'flex-end',
-    'center',
-    'space-between',
-    'space-around',
-    'space-evenly',
-  ] as const;
-  const alignItemsArr = [
-    'flex-start',
-    'flex-end',
-    'center',
-    'stretch',
-    'baseline',
-  ] as const;
-  const wraps = ['nowrap', 'wrap', 'wrap-reverse'] as const;
-  const directions = ['inherit', 'ltr', 'rtl'] as const;
-  const [flexDirection, setFlexDirection] = useState(0);
-  const [justifyContent, setJustifyContent] = useState(0);
-  const [alignItems, setAlignItems] = useState(0);
-  const [direction, setDirection] = useState(0);
-  const [wrap, setWrap] = useState(0);
+const RowGapAndColumnGap = () => {
+  const [rowGap, setRowGap] = useState(10);
+  const [columnGap, setColumnGap] = useState(10);
 
-  const hookedStyles = {
-    flexDirection: flexDirections[flexDirection],
-    justifyContent: justifyContents[justifyContent],
-    alignItems: alignItemsArr[alignItems],
-    direction: directions[direction],
-    flexWrap: wraps[wrap],
-  };
-
-  const changeSetting = (
-    value: number,
-    options: readonly unknown[],
-    setterFunction: (index: number) => void,
-  ) => {
-    if (value === options.length - 1) {
-      setterFunction(0);
-      return;
-    }
-    setterFunction(value + 1);
-  };
-  const [squares, setSquares] = useState([<Square />, <Square />, <Square />]);
   return (
-    <>
-      <View style={{paddingTop: StatusBar.currentHeight}} />
-      <View style={[styles.container, styles.playingSpace, hookedStyles]}>
-        {squares.map(elem => elem)}
-      </View>
-      <ScrollView style={styles.container}>
-        <View style={styles.controlSpace}>
-          <View style={styles.buttonView}>
-            <Button
-              title="Change Flex Direction"
-              onPress={() =>
-                changeSetting(flexDirection, flexDirections, setFlexDirection)
-              }
-            />
-            <Text style={styles.text}>{flexDirections[flexDirection]}</Text>
-          </View>
-          <View style={styles.buttonView}>
-            <Button
-              title="Change Justify Content"
-              onPress={() =>
-                changeSetting(
-                  justifyContent,
-                  justifyContents,
-                  setJustifyContent,
-                )
-              }
-            />
-            <Text style={styles.text}>{justifyContents[justifyContent]}</Text>
-          </View>
-          <View style={styles.buttonView}>
-            <Button
-              title="Change Align Items"
-              onPress={() =>
-                changeSetting(alignItems, alignItemsArr, setAlignItems)
-              }
-            />
-            <Text style={styles.text}>{alignItemsArr[alignItems]}</Text>
-          </View>
-          <View style={styles.buttonView}>
-            <Button
-              title="Change Direction"
-              onPress={() => changeSetting(direction, directions, setDirection)}
-            />
-            <Text style={styles.text}>{directions[direction]}</Text>
-          </View>
-          <View style={styles.buttonView}>
-            <Button
-              title="Change Flex Wrap"
-              onPress={() => changeSetting(wrap, wraps, setWrap)}
-            />
-            <Text style={styles.text}>{wraps[wrap]}</Text>
-          </View>
-          <View style={styles.buttonView}>
-            <Button
-              title="Add Square"
-              onPress={() => setSquares([...squares, <Square />])}
-            />
-          </View>
-          <View style={styles.buttonView}>
-            <Button
-              title="Delete Square"
-              onPress={() =>
-                setSquares(squares.filter((v, i) => i !== squares.length - 1))
-              }
-            />
-          </View>
-        </View>
-      </ScrollView>
-    </>
+    <PreviewLayout
+      columnGap={columnGap}
+      handleColumnGapChange={setColumnGap}
+      rowGap={rowGap}
+      handleRowGapChange={setRowGap}>
+      <View style={[styles.box, styles.box1]} />
+      <View style={[styles.box, styles.box2]} />
+      <View style={[styles.box, styles.box3]} />
+      <View style={[styles.box, styles.box4]} />
+      <View style={[styles.box, styles.box5]} />
+    </PreviewLayout>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    height: '50%',
-  },
-  playingSpace: {
-    backgroundColor: 'white',
-    borderColor: 'blue',
-    borderWidth: 3,
-  },
-  controlSpace: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    backgroundColor: '#F5F5F5',
-  },
-  buttonView: {
-    width: '50%',
-    padding: 10,
-  },
-  text: {textAlign: 'center'},
-});
+type PreviewLayoutProps = PropsWithChildren<{
+  columnGap: number;
+  handleColumnGapChange: (gap: number) => void;
+  rowGap: number;
+  handleRowGapChange: (gap: number) => void;
+}>;
 
-const Square = () => (
-  <View
-    style={{
-      width: 50,
-      height: 50,
-      backgroundColor: randomHexColor(),
-    }}
-  />
+const PreviewLayout = ({
+  children,
+  handleColumnGapChange,
+  handleRowGapChange,
+  rowGap,
+  columnGap,
+}: PreviewLayoutProps) => (
+  <View style={styles.previewContainer}>
+    <View style={styles.inputContainer}>
+      <View style={styles.itemsCenter}>
+        <Text>Row Gap</Text>
+        <TextInput
+          style={styles.input}
+          value={String(rowGap)}
+          onChangeText={v => handleRowGapChange(Number(v))}
+        />
+      </View>
+      <View style={styles.itemsCenter}>
+        <Text>Column Gap</Text>
+        <TextInput
+          style={styles.input}
+          value={String(columnGap)}
+          onChangeText={v => handleColumnGapChange(Number(v))}
+        />
+      </View>
+    </View>
+    <View style={[styles.container, {rowGap, columnGap}]}>{children}</View>
+  </View>
 );
 
-const randomHexColor = () => {
-  return '#000000'.replace(/0/g, () => {
-    return Math.round(Math.random() * 16).toString(16);
-  });
-};
+const styles = StyleSheet.create({
+  itemsCenter: {alignItems: 'center'},
+  inputContainer: {
+    gap: 4,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  previewContainer: {padding: 10, flex: 1},
+  input: {
+    borderBottomWidth: 1,
+    paddingVertical: 3,
+    width: 50,
+    textAlign: 'center',
+  },
+  container: {
+    flex: 1,
+    marginTop: 8,
+    backgroundColor: 'aliceblue',
+    maxHeight: 400,
+    flexWrap: 'wrap',
+    alignContent: 'flex-start',
+  },
+  box: {
+    width: 50,
+    height: 80,
+  },
+  box1: {
+    backgroundColor: 'orangered',
+  },
+  box2: {
+    backgroundColor: 'orange',
+  },
+  box3: {
+    backgroundColor: 'mediumseagreen',
+  },
+  box4: {
+    backgroundColor: 'deepskyblue',
+  },
+  box5: {
+    backgroundColor: 'mediumturquoise',
+  },
+});
 
-export default App;
+export default RowGapAndColumnGap;
