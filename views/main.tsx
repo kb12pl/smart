@@ -5,10 +5,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import Test  from './test'
 import Picture from './picture'
-import Layout from './layout'
-import Flex  from './flex'
 import Post  from './post'
-import todo from './todoview'
+import todo from '../todo/todo' 
 
 const values={Todo:todo,Picture:Picture,Post:Post,Test:Test}
 

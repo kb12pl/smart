@@ -1,7 +1,8 @@
 import React, { Component  } from 'react';
 import { View, StyleSheet, Alert, TouchableOpacity, Text } from 'react-native';
 
-import {kb} from "../services/LogService"
+import {kb} from "../kb"
+import {TodoAll} from "../services/todo"
 
 
 export default class Post extends Component {
@@ -14,7 +15,8 @@ export default class Post extends Component {
 
   postData = (str) => {      
     
-    kb.log('Hello, World!');
+    TodoAll();
+    
 
   }
   

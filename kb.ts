@@ -3,7 +3,7 @@ import { Container, injectable, inject } from 'inversify';
 
 
 interface ILogger {
-  log(message: string): void;
+  log(message?:any): void;
 }
    
 @injectable()
@@ -12,8 +12,8 @@ class ConsoleLogger implements ILogger {
   constructor(){
 
   }
-  log(message: string) {    
-    console.log(this.a++);
+  log(message: any) {    
+    console.log(message);
   }
 }
 const container = new Container();

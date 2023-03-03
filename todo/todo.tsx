@@ -10,20 +10,12 @@ import {
 } from "react-native";
 import Constants from "expo-constants";
 import * as SQLite from "expo-sqlite";
-import {Todo} from "../models/todomodel"
-import {TodoAll} from "../services/todoservice"
-import {kb} from "../services/LogService"
-function openDatabase() {
-  if (Platform.OS === "web") {
-    return {
-      transaction: () => {
-        return {
-          executeSql: () => { },
-        };
-      },
-    };
-  }
 
+import {TodoAll} from "./todo_service"
+
+import {kb} from "../kb"
+
+function openDatabase() {  
   const db = SQLite.openDatabase("db.db");
   return db;
 }
@@ -35,17 +27,25 @@ function Items({ done: doneHeading, onPressItem }) {
 
   useEffect(() => {
 
-    kb.log("a");
-
+    /*
     db.transaction((tx) => {
       tx.executeSql(
-        `select * from items where done = ?;`,
+        `select id  from items where done = ?;`,
         [doneHeading ? 1 : 0],
-        (_, { rows: { _array } }) => {setItems(_array);console.log(_array)}
+        (_, { rows: { _array } }) => {_array=[{id:1,value:"a"}]; setItems(_array); kb.log(_array)}
       );
     });
-  }, []);
-
+    */    
+    async function get(){
+      const a = await TodoAll();
+      //kb.log(a)
+      setItems(a); 
+    }
+   get()
+    
+    
+  },[]);
+  
   const heading = doneHeading ? "Completed" : "Todo";
 
   if (items === null || items.length === 0) {
@@ -55,7 +55,7 @@ function Items({ done: doneHeading, onPressItem }) {
   return (
     <View style={styles.sectionContainer}>
       <Text style={styles.sectionHeading}>{heading}</Text>
-      {items.map(({ id, done, value }) => (
+      {items.map(({ id, done, name }) => (
         <TouchableOpacity
           key={id}
           onPress={() => onPressItem && onPressItem(id)}
@@ -66,7 +66,7 @@ function Items({ done: doneHeading, onPressItem }) {
             padding: 8,
           }}
         >
-          <Text style={{ color: done ? "#fff" : "#000" }}>{value}</Text>
+          <Text style={{ color: done ? "#fff" : "#000" }}>{id}</Text>
         </TouchableOpacity>
       ))}
     </View>
@@ -86,17 +86,21 @@ export default function App() {
   useEffect(() => {
     db.transaction((tx) => {
       tx.executeSql(
-        "create table if not exists items (id integer primary key not null, done int, value text);"
+        `
+
+        create table if not exists items (id integer primary key not null, done int, value text);
+        `
+
       );
     });
   }, []);
-
+ 
   const add = async (text) => {
     // is text empty?
     if (text === null || text === "") {
       return false;
     }
-
+/*
     try {
       let res = await fetch('http://192.168.100.103:1219/api/ToDo',
       { 
@@ -113,7 +117,7 @@ export default function App() {
     } catch (e) {
       console.error(e);
     }
-
+*/
 
     db.transaction(
       (tx) => {
