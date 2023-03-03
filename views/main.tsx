@@ -3,12 +3,14 @@ import { View, Text,Button,StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import Test  from './test'
 import Picture from './picture'
 import Layout from './layout'
 import Flex  from './flex'
 import Post  from './post'
+import todo from './todoview'
 
-const values={Picture:Picture,Layout:Layout,Flex:Flex,Post:Post}
+const values={Todo:todo,Picture:Picture,Post:Post,Test:Test}
 
 const Stack = createNativeStackNavigator();
 

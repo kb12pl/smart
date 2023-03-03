@@ -21,7 +21,7 @@ export default class Post extends Component {
       });
       res = await res.json();
       console.log(res)
-      Alert.alert('onPress', res.json.str);
+      //Alert.alert('onPress', res.json.str);
     } catch (e) {
       console.error(e);
     }
