@@ -1,21 +1,13 @@
 import { useState, useEffect } from "react";
-import {
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, } from "react-native";
 import Constants from "expo-constants";
 import * as SQLite from "expo-sqlite";
+import { Todo } from "./todo_model"
+import { TodoDelete,TodoAll,TodoAdd } from "./todo_service"
 
-import {TodoAll} from "./todo_service"
+import { kb } from "../kb"
 
-import {kb} from "../kb"
-
-function openDatabase() {  
+function openDatabase() {
   const db = SQLite.openDatabase("db.db");
   return db;
 }
@@ -35,17 +27,17 @@ function Items({ done: doneHeading, onPressItem }) {
         (_, { rows: { _array } }) => {_array=[{id:1,value:"a"}]; setItems(_array); kb.log(_array)}
       );
     });
-    */    
-    async function get(){
+    */
+    async function get() {
       const a = await TodoAll();
       //kb.log(a)
-      setItems(a); 
+      setItems(a);
     }
-   get()
-    
-    
-  },[]);
-  
+    get()
+    //kb.log(2)
+
+  }, []);
+
   const heading = doneHeading ? "Completed" : "Todo";
 
   if (items === null || items.length === 0) {
@@ -66,7 +58,7 @@ function Items({ done: doneHeading, onPressItem }) {
             padding: 8,
           }}
         >
-          <Text style={{ color: done ? "#fff" : "#000" }}>{id}</Text>
+          <Text style={{ color: done ? "#fff" : "#000" }}>{name}</Text>
         </TouchableOpacity>
       ))}
     </View>
@@ -74,126 +66,74 @@ function Items({ done: doneHeading, onPressItem }) {
 }
 
 
-function useForceUpdate() {
-  const [value, setValue] = useState(0);
-  return [() => {setValue(value + 1)}, value];
-}
+
 
 export default function App() {
-  const [text, setText] = useState(null);
-  const [forceUpdate, forceUpdateId] = useForceUpdate();
+  function useForceUpdate() {
+    const [xxx, setValue] = useState(0);
+    return [() => { setValue(xxx + 1) }, xxx];
+  }
+    const [text, setText] = useState(null);
+  //const [forceUpdate, forceUpdateId] = useForceUpdate();
+  const [forceUpdateId,forceUpdate] = useState(0);
 
-  useEffect(() => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        `
+  const [car, setCar] = useState({
+    brand: "Ford",
+    model: "Mustang",
+    year: "1964",
+    color: "red"
+  });
 
-        create table if not exists items (id integer primary key not null, done int, value text);
-        `
-
-      );
+  const updateColor1 = () => {
+    setCar(previousState => {
+      kb.log(previousState);
+      return { ...previousState, color: "blue" }
     });
-  }, []);
- 
-  const add = async (text) => {
-    // is text empty?
-    if (text === null || text === "") {
-      return false;
-    }
-/*
-    try {
-      let res = await fetch('http://192.168.100.103:1219/api/ToDo',
-      { 
-        method:"POST",
-        headers: {
-          "Content-Type": "application/json",
-          // 'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body:JSON.stringify({Name:text})
-      });
-      let post:Todo = await res.json();
-      //kblog(post);
-      text = post.id+":"+post.name;
-    } catch (e) {
-      console.error(e);
-    }
-*/
+  }
+  const updateColor = () => {
+    forceUpdate(previousState => {
+      kb.log(previousState);
+      return ++previousState
+    });
+  }
+  
 
-    db.transaction(
-      (tx) => {
-        tx.executeSql("insert into items (done, value) values (0, ?)", [text]);
-        //tx.executeSql("select * from items", [], (_, { rows }) =>
-        //  console.log(JSON.stringify(rows))
-        //);
-      },
-      null,
-      // @ts-ignore
-      forceUpdate
-    );
-
-
-  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>SQLite Example</Text>
 
-      {Platform.OS === "web" ? (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
-          <Text style={styles.heading}>
-            Expo SQlite is not supported on web!
-          </Text>
-        </View>
-      ) : (
-        <>
-          <View style={styles.flexRow}>
-            <TextInput
-              onChangeText={(text) => setText(text)}
-              onSubmitEditing={() => {
-                add(text);
-                setText(null);
-              }}
-              placeholder="what do you need to do?"
-              style={styles.input}
-              value={text}
-            />
-          </View>
-          <ScrollView style={styles.listArea}>
-            <Items              
-              key={`forceupdate-todo-${forceUpdateId}`}
-              done={false}
-              onPressItem={(id) =>
-                db.transaction(
-                  (tx) => {
-                    tx.executeSql(`update items set done = 1 where id = ?;`, [
-                      id,
-                    ]);
-                  },
-                  null,
-                  // @ts-ignore
-                  forceUpdate
-                )
-              }
-            />
-            <Items
-              done
-              key={`forceupdate-done-${forceUpdateId}`}
-              onPressItem={(id) =>
-                db.transaction(
-                  (tx) => {
-                    tx.executeSql(`delete from items where id = ?;`, [id]);
-                  },
-                  null,
-                  // @ts-ignore
-                  forceUpdate
-                )
-              }
-            />
-          </ScrollView>
-        </>
-      )}
+      <View style={styles.flexRow}>
+        <TextInput
+          onChangeText={(text) => setText(text)}
+          onSubmitEditing={async () => {            
+            await TodoAdd(text);
+            setText(null);
+            forceUpdate(a => ++a );  
+          }}
+          placeholder="what do you need to do?"
+          style={styles.input}
+          value={text}
+        />
+      </View>
+      <ScrollView style={styles.listArea}>
+        <Items          
+          key={`forceupdate-todo-${forceUpdateId}`}
+          done={false }
+          onPressItem={
+            async (id) =>{
+            await TodoDelete(id)
+            forceUpdate(a => ++a );                   
+          } }
+        />        
+        <Items
+          done
+          key={`forceupdate-done-${forceUpdateId}`}
+          onPressItem={(id)=>{kb.log(12)}}
+        />
+      </ScrollView>
+
+
     </View>
   );
 }
